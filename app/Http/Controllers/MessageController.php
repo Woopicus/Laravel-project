@@ -7,20 +7,20 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function __construct(
-        private MessageService $service
-    ) {}
-
-    public function index()
+    public function __construct(private MessageService $messageService)
     {
-        return response()->json([
-            'data' => $this->service->getMessages()
-        ], 200);
     }
 
-    public function show($id)
+    public function getMessages()
     {
-        $message = $this->service->getMessage($id);
+        $messages = $this->messageService->getMessages();
+
+        return response()->json(['data' => $messages], 200);
+    }
+
+    public function getMessage(int $messageId)
+    {
+        $message = $this->messageService->getMessage($messageId);
 
         if (!$message) {
             return response()->json(['error' => 'Message not found'], 404);
@@ -29,16 +29,16 @@ class MessageController extends Controller
         return response()->json(['data' => $message], 200);
     }
 
-    public function store(Request $request)
+    public function createMessage(Request $request)
     {
-        $message = $this->service->createMessage($request->all());
+        $message = $this->messageService->createMessage($request->all());
 
         return response()->json(['data' => $message], 201);
     }
 
-    public function update(Request $request, $id)
+    public function updateMessage(Request $request, int $messageId)
     {
-        $message = $this->service->updateMessage($id, $request->all());
+        $message = $this->messageService->updateMessage($messageId, $request->all());
 
         if (!$message) {
             return response()->json(['error' => 'Message not found'], 404);
@@ -47,9 +47,9 @@ class MessageController extends Controller
         return response()->json(['data' => $message], 200);
     }
 
-    public function destroy($id)
+    public function removeMessage(int $messageId)
     {
-        $deleted = $this->service->removeMessage($id);
+        $deleted = $this->messageService->removeMessage($messageId);
 
         if (!$deleted) {
             return response()->json(['error' => 'Message not found'], 404);

@@ -9,8 +9,11 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function __construct(private MessageService $messageService)
+    private MessageService $messageService;
+
+    public function __construct(MessageService $messageService)
     {
+        $this->messageService = $messageService;
     }
 
     public function getMessages()
@@ -24,11 +27,11 @@ class MessageController extends Controller
     {
         $message = $this->messageService->getMessage($messageId);
 
-        if (!$message) {
-            return response()->json(['error' => 'Message not found'], 404);
+        if ($message) {
+            return response()->json(['data' => $message], 200);
         }
 
-        return response()->json(['data' => $message], 200);
+        return response()->json(['error' => 'Message not found'], 404);
     }
 
     public function createMessage(Request $request)
@@ -42,21 +45,21 @@ class MessageController extends Controller
     {
         $message = $this->messageService->updateMessage($messageId, $request->all());
 
-        if (!$message) {
-            return response()->json(['error' => 'Message not found'], 404);
+        if ($message) {
+            return response()->json(['data' => $message], 200);
         }
 
-        return response()->json(['data' => $message], 200);
+        return response()->json(['error' => 'Message not found'], 404);
     }
 
     public function removeMessage(int $messageId)
     {
         $deleted = $this->messageService->removeMessage($messageId);
 
-        if (!$deleted) {
-            return response()->json(['error' => 'Message not found'], 404);
+        if ($deleted) {
+            return response()->json([], 204);
         }
 
-        return response()->json([], 204);
+        return response()->json(['error' => 'Message not found'], 404);
     }
 }

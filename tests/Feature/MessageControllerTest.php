@@ -15,15 +15,19 @@ class MessageControllerTest extends TestCase
     public function test_it_returns_a_list_of_messages(): void
     {
         Message::create([
-            'message' => 'Hello world',
-            'sender'  => 'Tester',
-            'date'    => now(),
+            'type'        => 'info',
+            'subject'     => 'Greeting',
+            'content'     => 'Hello world',
+            'sender_name' => 'Tester',
+            'date'        => now(),
         ]);
 
         Message::create([
-            'message' => 'Second message',
-            'sender'  => 'Tester 2',
-            'date'    => now(),
+            'type'        => 'info',
+            'subject'     => 'Second Subject',
+            'content'     => 'Second message',
+            'sender_name' => 'Tester 2',
+            'date'        => now(),
         ]);
 
         $response = $this->getJson('/api/messages');
@@ -36,23 +40,29 @@ class MessageControllerTest extends TestCase
     public function test_it_updates_a_message(): void
     {
         $message = Message::create([
-            'message' => 'Old message',
-            'sender'  => 'Old Sender',
-            'date'    => now(),
+            'type'        => 'info',
+            'subject'     => 'Old Subject',
+            'content'     => 'Old message',
+            'sender_name' => 'Old Sender',
+            'date'        => now(),
         ]);
 
         $response = $this->putJson('/api/messages/' . $message->id, [
-            'message' => 'Updated message',
-            'sender'  => 'New Sender',
+            'subject'     => 'Updated Subject',
+            'content'     => 'Updated message',
+            'sender_name' => 'New Sender',
+            'type'        => 'info',
         ]);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data']);
 
         $this->assertDatabaseHas('messages', [
-            'id'      => $message->id,
-            'message' => 'Updated message',
-            'sender'  => 'New Sender',
+            'id'          => $message->id,
+            'subject'     => 'Updated Subject',
+            'content'     => 'Updated message',
+            'sender_name' => 'New Sender',
+            'type'        => 'info',
         ]);
     }
 }
